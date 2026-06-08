@@ -1,0 +1,441 @@
+/* ---------- Reset & base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #0b0b0f;
+  color: #f5f5f7;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ---------- Navigation bar ---------- */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(11, 11, 15, 0.55);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav__left,
+.nav__right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nav__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 16px;
+}
+
+.nav__logo-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #7c5cff 0%, #21c1ff 100%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.nav__link {
+  font-size: 14px;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.nav__link:hover {
+  opacity: 1;
+}
+
+.nav__link--active {
+  opacity: 1;
+  position: relative;
+}
+
+.nav__link--active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: linear-gradient(90deg, #7c5cff, #21c1ff);
+  border-radius: 2px;
+}
+
+.nav__github {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: background 0.2s ease;
+}
+
+.nav__github:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.nav__github svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- Page-level layout ---------- */
+main {
+  display: block;
+}
+
+.section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 32px 32px;
+}
+
+.section__inner {
+  max-width: 1100px;
+  width: 100%;
+  text-align: center;
+}
+
+.section__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  opacity: 0.6;
+  margin-bottom: 16px;
+}
+
+.section__title {
+  font-size: clamp(32px, 5vw, 64px);
+  line-height: 1.05;
+  margin: 0 0 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.section__body {
+  font-size: clamp(16px, 1.4vw, 18px);
+  line-height: 1.6;
+  opacity: 0.75;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ---------- Hero (pinned, scroll-scrubbed) ---------- */
+.hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 60% at 30% 30%, rgba(124, 92, 255, 0.22), transparent 60%),
+    radial-gradient(50% 50% at 80% 70%, rgba(33, 193, 255, 0.18), transparent 60%),
+    #0b0b0f;
+  will-change: transform, opacity;
+  z-index: 0;
+}
+
+/* --- Title block (bottom-left) --- */
+.hero__title-block {
+  position: absolute;
+  left: 6vw;
+  bottom: 7vh;
+  max-width: 65vw; /* widened so the title can grow on larger monitors */
+  z-index: 10;
+}
+
+/* Soft dark backdrop behind the title so cards beneath it stay readable */
+.hero__title-block::before {
+  content: "";
+  position: absolute;
+  inset: -10vh -14vw -8vh -10vw;
+  background: radial-gradient(
+    ellipse 80% 75% at 28% 78%,
+    rgba(11, 11, 15, 0.85) 0%,
+    rgba(11, 11, 15, 0.55) 40%,
+    transparent 78%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero__title {
+  /* Steeper vw slope + higher cap so external monitors get a much bigger
+     title. On a 1440 Mac this lands ~122 px (was 101 px), on a 2560 monitor
+     it grows to ~218 px (was capped at 108 px). */
+  font-size: clamp(56px, 8.5vw, 320px);
+  /* line-height alone won't reliably cover the descender of "g" when
+     background-clip: text is involved (the painted box is the line box).
+     The explicit padding-bottom guarantees the gradient extends below the
+     baseline so descenders get the colour fill. */
+  line-height: 1.05;
+  padding-bottom: 0.15em;
+  margin: 0 0 22px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  background: linear-gradient(180deg, #ffffff 0%, #c3c6dc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* IMPORTANT — do NOT use text-shadow here. With background-clip:text +
+     color:transparent, text-shadow paints ABOVE the clipped gradient
+     (because text rendering runs after background painting), so the
+     shadow ends up on top of the white glyphs and greys them out.
+     filter:drop-shadow operates on the element's final rendered alpha
+     instead, so the shadow correctly sits BEHIND the gradient fill. */
+  filter:
+    drop-shadow(0 6px 24px rgba(18, 14, 38, 0.65))
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+}
+
+.hero__tagline {
+  /* Bigger + more prominent than before, and keeps scaling on large screens. */
+  font-size: clamp(17px, 1.55vw, 30px);
+  line-height: 1.5;
+  opacity: 0.82;
+  max-width: 38ch;
+  margin: 0 0 28px;
+}
+
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero__cta:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.hero__cta svg {
+  transition: transform 0.2s ease;
+}
+
+.hero__cta:hover svg {
+  transform: translateX(2px);
+}
+
+.hero__scrollcue {
+  position: absolute;
+  right: 32px;
+  bottom: 28px;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  opacity: 0.45;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+/* --- Cards layer --- */
+.hero__cards {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.card {
+  position: absolute;
+  border-radius: 14px;
+  overflow: hidden;
+  will-change: transform, opacity, filter;
+  transform-origin: 50% 50%;
+
+  /* iOS-26 frosted glass — shared by every card. For media cards this
+     becomes a translucent ring around the photo/video so the hero gradient
+     and the cards behind show through. */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.05) 55%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    0 22px 60px -12px rgba(0, 0, 0, 0.55),
+    0 6px 18px -6px rgba(0, 0, 0, 0.35);
+}
+
+/* Media wrap: an inner rounded container so the media sits inset from the
+   card border, with a faint frosted halo along its inner edges */
+.card__media-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card__media-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 14px 2px rgba(255, 255, 255, 0.07);
+}
+
+.card__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Cards with real media get inner padding so the glass shows as a ring
+   around the media. Glass styling itself is already on .card above. JS
+   sets --media-gap per card as a fraction of its own width. */
+.card:not(.card--placeholder) {
+  padding: var(--media-gap, 6px);
+}
+
+.card__tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px 4px 9px;
+  background: rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+  backdrop-filter: blur(8px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.card__tag-icon {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Annotation as a floating pill bubble (not bare text) */
+.card__annotation {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  padding: 7px 13px;
+  background: rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Layer treatment — depth via blur intensity (opacity is reserved for
+   GSAP's autoAlpha entry animation, so we don't set it here) */
+.card--foreground {
+  z-index: 3;
+}
+
+.card--mid {
+  z-index: 2;
+  filter: blur(2px);
+}
+
+.card--background {
+  z-index: 1;
+  filter: blur(5.5px);
+}
+
+/* Initially visible bg cards: a touch more diffuse so they feel ambient */
+.card[data-initial="visible"].card--background {
+  filter: blur(7.5px);
+}
+
+/* Section accents — placeholder palettes per section */
+.section--alt {
+  background: linear-gradient(180deg, #0b0b0f 0%, #11131a 100%);
+}
+
+.section--accent {
+  background: linear-gradient(180deg, #11131a 0%, #0b0b0f 100%);
+}
+
+/* ---------- Placeholder pages ---------- */
+.placeholder {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 32px 32px;
+  text-align: center;
+}
+
+.placeholder__title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.placeholder__body {
+  opacity: 0.6;
+}
