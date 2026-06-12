@@ -41,7 +41,7 @@
 
     <main>
       <!-- ===================== Hero (pinned + scrubbed) ===================== -->
-      <section class="hero" id="hero" data-hero>
+      <section class="hero" id="hero" data-hero data-snap>
         <div class="hero__bg" data-hero-bg></div>
 
         <!-- Cards (rendered by JS from window.HERO_CARDS) -->
@@ -81,15 +81,388 @@
         <div class="hero__scrollcue">Scroll</div>
       </section>
 
-      <!-- ===================== Snap sections (placeholders) ===================== -->
-      <section class="section section--alt" data-snap>
-        <div class="section__inner">
-          <div class="section__eyebrow">Section 02</div>
-          <h2 class="section__title">What is Ego-Introspect?</h2>
-          <p class="section__body">
-            Placeholder description. Replace with a short overview of the dataset
-            and its motivation.
-          </p>
+      <!-- ===================== Section 02 — Pinned horizontal carousel ===================== -->
+      <!-- 4 feature slides, scrubbed by vertical scroll. Pin engages when the
+           section's top hits the viewport top; releases after the 4th slide. -->
+      <section class="features" data-features data-snap id="features">
+        <div class="features__stage">
+          <div class="features__viewport">
+            <button
+              class="features__nav features__nav--prev"
+              type="button"
+              data-features-prev
+              aria-label="Previous slide"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            <div class="features__track" data-features-track>
+              <!-- Slide 0 — EgoIntrospect at a Glance -->
+              <article class="slide slide--active" data-slide="0">
+                <div class="glance">
+                  <div class="glance__top">
+                    <div class="glance__lead">
+                      <div class="glance__eyebrow">Ego-Introspect Dataset</div>
+                      <h2 class="glance__title">EgoIntrospect at&nbsp;a&nbsp;Glance</h2>
+                      <p class="glance__body">
+                        180 hours of multimodal egocentric recordings from 60 participants,
+                        linking daily-life observations with user-provided internal-state annotations.
+                      </p>
+                    </div>
+
+                    <!--
+                      ╔═══════════════════════════════════════════════════╗
+                      ║  Orbit visualization mode switch — change ONE     ║
+                      ║  attribute below to swap between:                 ║
+                      ║    data-orbit-mode="svg"    → hand-built SVG      ║
+                      ║                              + HTML stat callouts ║
+                      ║    data-orbit-mode="image"  → use the pre-rendered║
+                      ║                              transparent PNG asset║
+                      ╚═══════════════════════════════════════════════════╝
+                    -->
+                    <div class="glance__orbit" data-orbit-mode="svg" aria-hidden="true">
+                      <!-- ─── Mode B: pre-rendered PNG artwork ─── -->
+                      <img class="orbit-image"
+                           src="./assets/homepage/neon_asset_transparent.png"
+                           alt="" />
+
+                      <!-- ─── Mode A: hand-built SVG version (everything below) ─── -->
+                      <!-- Background SVG: 4 simple curved radial connectors from
+                           each data-point icon toward the core, plus a small
+                           glowing anchor particle at each icon's position. -->
+                      <svg class="orbit-bg" viewBox="0 0 560 400" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                          <filter id="orbitGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="2.4" result="blur" />
+                            <feMerge>
+                              <feMergeNode in="blur" />
+                              <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                          </filter>
+                        </defs>
+
+                        <!-- 4 connectors. Each starts at a NODE BALL (anchor
+                             particle) that sits in the empty space between the
+                             icon and the core, then curves inward to terminate
+                             just outside the bright ring group (core bright
+                             rings reach roughly r≈84 from core center
+                             (280,200), so connectors end around r=100). -->
+                        <g fill="none" filter="url(#orbitGlow)" stroke-linecap="round" stroke-width="1.3">
+                          <path d="M 254 60  C 262 85, 272 100, 280 115"
+                                stroke="#d65cff" stroke-opacity="0.78" />
+                          <path d="M 56 178  C 100 185, 140 195, 185 200"
+                                stroke="#b97cff" stroke-opacity="0.78" />
+                          <path d="M 504 178 C 460 185, 420 195, 375 200"
+                                stroke="#21c1ff" stroke-opacity="0.78" />
+                          <path d="M 408 326 C 388 308, 365 295, 345 282"
+                                stroke="#5cc8ff" stroke-opacity="0.78" />
+                        </g>
+
+                        <!-- Node balls at the INNER connector ends — anchor each
+                             line at the core-side, where it emerges from the
+                             concentric ring group. -->
+                        <g filter="url(#orbitGlow)">
+                          <circle cx="280" cy="115" r="3.6" fill="#ffffff" />
+                          <circle cx="280" cy="115" r="3.6" fill="#d65cff" opacity="0.65" />
+                          <circle cx="185" cy="200" r="3.6" fill="#ffffff" />
+                          <circle cx="185" cy="200" r="3.6" fill="#b97cff" opacity="0.65" />
+                          <circle cx="375" cy="200" r="3.6" fill="#ffffff" />
+                          <circle cx="375" cy="200" r="3.6" fill="#21c1ff" opacity="0.65" />
+                          <circle cx="345" cy="282" r="3.6" fill="#ffffff" />
+                          <circle cx="345" cy="282" r="3.6" fill="#5cc8ff" opacity="0.65" />
+                        </g>
+                      </svg>
+
+                      <!-- Central data core: ten SVG rings in two tiers —
+                           six tight bright inner rings (the "main 6 ring
+                           group") + four wider dim outer rings as the halo.
+                           Bright center is just a tiny disc + hot spot, no
+                           big blob. Scattered particles add a starfield feel. -->
+                      <div class="orbit__core">
+                        <svg class="orbit__core-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+                          <defs>
+                            <radialGradient id="coreHalo" cx="50%" cy="50%" r="50%">
+                              <stop offset="0%"   stop-color="#b85cff" stop-opacity="0.42" />
+                              <stop offset="40%"  stop-color="#5c5cff" stop-opacity="0.1" />
+                              <stop offset="100%" stop-color="#7c5cff" stop-opacity="0" />
+                            </radialGradient>
+                            <radialGradient id="coreCenter" cx="50%" cy="50%" r="50%">
+                              <stop offset="0%"   stop-color="#ffffff" />
+                              <stop offset="35%"  stop-color="#d4f5ff" />
+                              <stop offset="75%"  stop-color="#5cb8ff" stop-opacity="0.65" />
+                              <stop offset="100%" stop-color="#3a6cff" stop-opacity="0" />
+                            </radialGradient>
+
+                            <!-- "Searchlight-through-mist" nebula fill inside ring 6.
+                                 Stops are paired around each ring boundary so the
+                                 fog drops in 3 discrete tiers:
+                                 - 0    → r=14 (rings 1–2): level 3 (densest, cyan)
+                                 - 0.28 → r=30 (rings 3–4): level 2 (mid, blue-violet)
+                                 - 0.6  → r=50 (rings 5–6): level 1 (faint, violet)
+                                 - >1.0 → past ring 6: 0 (no nebula at all) -->
+                            <radialGradient id="coreNebula" cx="50%" cy="50%" r="50%">
+                              <stop offset="0"    stop-color="#a8e6ff" stop-opacity="0.55" />
+                              <stop offset="0.28" stop-color="#7c8cff" stop-opacity="0.42" />
+                              <stop offset="0.29" stop-color="#7c5cff" stop-opacity="0.28" />
+                              <stop offset="0.6"  stop-color="#7c5cff" stop-opacity="0.24" />
+                              <stop offset="0.61" stop-color="#a85cff" stop-opacity="0.12" />
+                              <stop offset="0.98" stop-color="#a85cff" stop-opacity="0.07" />
+                              <stop offset="1.0"  stop-color="#7c5cff" stop-opacity="0" />
+                            </radialGradient>
+
+                            <!-- 6 INNER bright ring gradients (cr1=innermost, cr6=outermost-of-bright) -->
+                            <linearGradient id="cr1" x1="20%" y1="20%" x2="80%" y2="80%">
+                              <stop offset="0%"   stop-color="#ffffff" stop-opacity="1" />
+                              <stop offset="55%"  stop-color="#bdf3ff" stop-opacity="0.95" />
+                              <stop offset="100%" stop-color="#7cc8ff" stop-opacity="0.45" />
+                            </linearGradient>
+                            <linearGradient id="cr2" x1="85%" y1="20%" x2="20%" y2="80%">
+                              <stop offset="0%"   stop-color="#ddf5ff" stop-opacity="0.95" />
+                              <stop offset="55%"  stop-color="#7cc8ff" stop-opacity="0.9" />
+                              <stop offset="100%" stop-color="#5c8cff" stop-opacity="0.4" />
+                            </linearGradient>
+                            <linearGradient id="cr3" x1="22%" y1="40%" x2="78%" y2="60%">
+                              <stop offset="0%"   stop-color="#9cdfff" stop-opacity="0.9" />
+                              <stop offset="55%"  stop-color="#5cb8ff" stop-opacity="0.85" />
+                              <stop offset="100%" stop-color="#3a4cb0" stop-opacity="0.3" />
+                            </linearGradient>
+                            <linearGradient id="cr4" x1="62%" y1="14%" x2="38%" y2="86%">
+                              <stop offset="0%"   stop-color="#7cc6ff" stop-opacity="0.82" />
+                              <stop offset="55%"  stop-color="#5c7adf" stop-opacity="0.78" />
+                              <stop offset="100%" stop-color="#2a2d80" stop-opacity="0.22" />
+                            </linearGradient>
+                            <linearGradient id="cr5" x1="32%" y1="62%" x2="72%" y2="38%">
+                              <stop offset="0%"   stop-color="#7c9fff" stop-opacity="0.72" />
+                              <stop offset="55%"  stop-color="#7c5cff" stop-opacity="0.7" />
+                              <stop offset="100%" stop-color="#3a1a80" stop-opacity="0.18" />
+                            </linearGradient>
+                            <linearGradient id="cr6" x1="50%" y1="14%" x2="50%" y2="86%">
+                              <stop offset="0%"   stop-color="#9e7cff" stop-opacity="0.58" />
+                              <stop offset="50%"  stop-color="#b85cff" stop-opacity="0.52" />
+                              <stop offset="100%" stop-color="#5a2095" stop-opacity="0.14" />
+                            </linearGradient>
+
+                            <!-- 4 OUTER faint ring gradients (halo-like) -->
+                            <linearGradient id="cr7" x1="25%" y1="35%" x2="75%" y2="65%">
+                              <stop offset="0%"   stop-color="#a76cff" stop-opacity="0.4" />
+                              <stop offset="55%"  stop-color="#d65cff" stop-opacity="0.36" />
+                              <stop offset="100%" stop-color="#4a1080" stop-opacity="0.08" />
+                            </linearGradient>
+                            <linearGradient id="cr8" x1="75%" y1="35%" x2="25%" y2="65%">
+                              <stop offset="0%"   stop-color="#b97cff" stop-opacity="0.28" />
+                              <stop offset="50%"  stop-color="#7c5cff" stop-opacity="0.24" />
+                              <stop offset="100%" stop-color="#3a1a80" stop-opacity="0.06" />
+                            </linearGradient>
+                            <linearGradient id="cr9" x1="35%" y1="25%" x2="65%" y2="75%">
+                              <stop offset="0%"   stop-color="#a8a8ff" stop-opacity="0.18" />
+                              <stop offset="55%"  stop-color="#7c5cff" stop-opacity="0.16" />
+                              <stop offset="100%" stop-color="#2a1060" stop-opacity="0.04" />
+                            </linearGradient>
+                            <linearGradient id="cr10" x1="65%" y1="65%" x2="35%" y2="35%">
+                              <stop offset="0%"   stop-color="#a8a8ff" stop-opacity="0.12" />
+                              <stop offset="100%" stop-color="#5a1095" stop-opacity="0.03" />
+                            </linearGradient>
+                          </defs>
+
+                          <!-- Outer halo -->
+                          <circle cx="100" cy="100" r="98" fill="url(#coreHalo)" />
+
+                          <!-- "Searchlight through mist" nebula fill (only inside
+                               ring 6 — gradient fades to 0 at r=50). Drawn before
+                               the rings so they sit on top of the mist. -->
+                          <circle cx="100" cy="100" r="50" fill="url(#coreNebula)" />
+
+                          <!-- 4 wide faint outer rings, drawn as sparse dot strings
+                               (round-capped tiny dashes look like discrete samples). -->
+                          <g fill="none" stroke-linecap="round">
+                            <circle cx="100" cy="100" r="95" stroke="url(#cr10)" stroke-width="0.7"
+                                    stroke-dasharray="0.5 6 0.5 9" />
+                            <circle cx="100" cy="100" r="82" stroke="url(#cr9)"  stroke-width="0.8"
+                                    stroke-dasharray="0.5 5 0.5 8" />
+                            <circle cx="100" cy="100" r="68" stroke="url(#cr8)"  stroke-width="0.8"
+                                    stroke-dasharray="0.6 4 0.6 7" />
+                            <circle cx="100" cy="100" r="56" stroke="url(#cr7)"  stroke-width="0.9"
+                                    stroke-dasharray="0.7 3 0.7 6" />
+                          </g>
+
+                          <!-- 6 inner bright rings — non-uniform dash patterns so
+                               each ring reads as a cluster of sample points rather
+                               than a smooth stroke. Inner rings keep longer arcs
+                               (more continuous), outer rings get more dot-like. -->
+                          <g fill="none" stroke-linecap="round">
+                            <circle cx="100" cy="100" r="50" stroke="url(#cr6)" stroke-width="0.95"
+                                    stroke-dasharray="1.5 3 2 4 1 5 2 3 1 4" />
+                            <circle cx="100" cy="100" r="40" stroke="url(#cr5)" stroke-width="1.0"
+                                    stroke-dasharray="2 3 1 4 3 2 1 5 2 3" />
+                            <circle cx="100" cy="100" r="30" stroke="url(#cr4)" stroke-width="1.0"
+                                    stroke-dasharray="3 2 4 2 2 3 5 1 3 2" />
+                            <circle cx="100" cy="100" r="22" stroke="url(#cr3)" stroke-width="1.0"
+                                    stroke-dasharray="4 2 3 1 5 2 2 1 4 2" />
+                            <circle cx="100" cy="100" r="14" stroke="url(#cr2)" stroke-width="0.95"
+                                    stroke-dasharray="5 1.5 4 1 3 1 5 2 2 1" />
+                            <circle cx="100" cy="100" r="8"  stroke="url(#cr1)" stroke-width="0.9"
+                                    stroke-dasharray="4 1 6 1 3 0.5 5 1" />
+                          </g>
+
+                          <!-- Tiny bright central disc — no big blob, just a hot point -->
+                          <circle cx="100" cy="100" r="4" fill="url(#coreCenter)">
+                            <animate attributeName="r" values="4;4.8;4" dur="4.2s" repeatCount="indefinite" />
+                          </circle>
+                          <circle cx="99.5" cy="99" r="1.6" fill="#ffffff">
+                            <animate attributeName="opacity" values="0.85;1;0.85" dur="4.2s" repeatCount="indefinite" />
+                          </circle>
+                        </svg>
+                      </div>
+
+                      <div class="stat stat--top">
+                        <div class="stat__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" />
+                            <polyline points="12 7 12 12 15 14" />
+                          </svg>
+                        </div>
+                        <div class="stat__meta">
+                          <div class="stat__num">180h</div>
+                          <div class="stat__label">recordings</div>
+                        </div>
+                      </div>
+
+                      <div class="stat stat--right">
+                        <div class="stat__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3"  y="3"  width="7" height="7" rx="1.2" />
+                            <rect x="14" y="3"  width="7" height="7" rx="1.2" />
+                            <rect x="3"  y="14" width="7" height="7" rx="1.2" />
+                            <rect x="14" y="14" width="7" height="7" rx="1.2" />
+                          </svg>
+                        </div>
+                        <div class="stat__meta">
+                          <div class="stat__num">14</div>
+                          <div class="stat__label">scenarios</div>
+                        </div>
+                      </div>
+
+                      <div class="stat stat--bottom">
+                        <div class="stat__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                            <path d="M2 10v4" />
+                            <path d="M6 6v12" />
+                            <path d="M10 3v18" />
+                            <path d="M14 7v10" />
+                            <path d="M18 5v14" />
+                            <path d="M22 10v4" />
+                          </svg>
+                        </div>
+                        <div class="stat__meta">
+                          <div class="stat__num">3</div>
+                          <div class="stat__label">internal-state<br />dimensions</div>
+                        </div>
+                      </div>
+
+                      <div class="stat stat--left">
+                        <div class="stat__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                          </svg>
+                        </div>
+                        <div class="stat__meta">
+                          <div class="stat__num">60</div>
+                          <div class="stat__label">participants</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="glance__cards">
+                    <article class="glance-card">
+                      <div class="glance-card__head">
+                        <span class="glance-card__num">01</span>
+                        <div class="glance-card__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M20 21a8 8 0 1 0-16 0" />
+                          </svg>
+                        </div>
+                      </div>
+                      <h3 class="glance-card__title">Labels Only the Wearer Can Provide</h3>
+                      <p class="glance-card__body">Ground truth comes from participants themselves.</p>
+                    </article>
+
+                    <article class="glance-card">
+                      <div class="glance-card__head">
+                        <span class="glance-card__num">02</span>
+                        <div class="glance-card__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                            <line x1="3"  y1="12" x2="3"  y2="12" />
+                            <line x1="6"  y1="9"  x2="6"  y2="15" />
+                            <line x1="9"  y1="5"  x2="9"  y2="19" />
+                            <line x1="12" y1="3"  x2="12" y2="21" />
+                            <line x1="15" y1="6"  x2="15" y2="18" />
+                            <line x1="18" y1="9"  x2="18" y2="15" />
+                            <line x1="21" y1="11" x2="21" y2="13" />
+                          </svg>
+                        </div>
+                      </div>
+                      <h3 class="glance-card__title">Synchronized Multimodal Wearable Signals</h3>
+                      <p class="glance-card__body">Video, audio, gaze, motion, and physiology are aligned across devices.</p>
+                    </article>
+
+                    <article class="glance-card">
+                      <div class="glance-card__head">
+                        <span class="glance-card__num">03</span>
+                        <div class="glance-card__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8"  y1="2" x2="8"  y2="6" />
+                            <line x1="3"  y1="10" x2="21" y2="10" />
+                          </svg>
+                        </div>
+                      </div>
+                      <h3 class="glance-card__title">Captured in User-Chosen Daily Scenarios</h3>
+                      <p class="glance-card__body">Long-form recordings follow natural routines rather than scripted tasks.</p>
+                    </article>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Slides 1–3 — placeholders until their layouts are designed -->
+              <article class="slide" data-slide="1">
+                <div class="slide-placeholder">Slide 02 — coming soon</div>
+              </article>
+              <article class="slide" data-slide="2">
+                <div class="slide-placeholder">Slide 03 — coming soon</div>
+              </article>
+              <article class="slide" data-slide="3">
+                <div class="slide-placeholder">Slide 04 — coming soon</div>
+              </article>
+            </div>
+
+            <button
+              class="features__nav features__nav--next"
+              type="button"
+              data-features-next
+              aria-label="Next slide"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+
+          <footer class="features__footer">
+            <div class="features__dots" data-features-dots role="tablist" aria-label="Feature slides">
+              <button class="dot dot--active" type="button" data-dot="0" aria-label="Go to slide 1"></button>
+              <button class="dot" type="button" data-dot="1" aria-label="Go to slide 2"></button>
+              <button class="dot" type="button" data-dot="2" aria-label="Go to slide 3"></button>
+              <button class="dot" type="button" data-dot="3" aria-label="Go to slide 4"></button>
+            </div>
+          </footer>
         </div>
       </section>
 
@@ -114,13 +487,85 @@
         </div>
       </section>
 
-      <section class="section section--accent" data-snap>
-        <div class="section__inner">
-          <div class="section__eyebrow">Section 05</div>
-          <h2 class="section__title">Get started.</h2>
-          <p class="section__body">
-            Placeholder for download links, citation, and contact.
-          </p>
+      <!-- ===================== Contributors & Citation ===================== -->
+      <section class="section section--accent contrib" data-snap>
+        <div class="contrib__inner">
+          <h2 class="contrib__title">Contributors &amp; Citation</h2>
+
+          <div class="contrib__panel">
+            <!-- Avatar row: core contributors with initials, name, affiliation, role -->
+            <div class="contrib__avatars" data-avatars></div>
+
+            <!-- Full author list -->
+            <p class="contrib__authors">
+              <span class="contrib__author"><strong>Zeyu Wang</strong><sup>1*</sup></span>,
+              <span class="contrib__author"><strong>Chang Liu</strong><sup>1,8*</sup></span>,
+              <span class="contrib__author"><strong>Eduardus Tjitrahardja</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Yuntao Wang</strong><sup>1‡</sup></span>,
+              <span class="contrib__author"><strong>Borislav Pavlov</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Fangfei Gou</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Jose Manuel Davila</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Dai Shi</strong><sup>2</sup></span>,
+              <span class="contrib__author"><strong>Ran Xu</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Yue Pan</strong><sup>3</sup></span>,
+              <span class="contrib__author"><strong>Jiayi Tan</strong><sup>3</sup></span>,
+              <span class="contrib__author"><strong>Shuting Chang</strong><sup>2</sup></span>,
+              <span class="contrib__author"><strong>Qi Wang</strong><sup>2</sup></span>,
+              <span class="contrib__author"><strong>Jinzhao Li</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Jiacheng Hua</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Yifei Huang</strong><sup>4</sup></span>,
+              <span class="contrib__author"><strong>Jingwei Sun</strong><sup>5</sup></span>,
+              <span class="contrib__author"><strong>Yu Zhang</strong><sup>5</sup></span>,
+              <span class="contrib__author"><strong>Liuxin Zhang</strong><sup>5</sup></span>,
+              <span class="contrib__author"><strong>Guocai Yao</strong><sup>6</sup></span>,
+              <span class="contrib__author"><strong>Jia Jia</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Yin Li</strong><sup>7</sup></span>,
+              <span class="contrib__author"><strong>Qianying Wang</strong><sup>5</sup></span>,
+              <span class="contrib__author"><strong>Yuanchun Shi</strong><sup>1</sup></span>,
+              <span class="contrib__author"><strong>Miao Liu</strong><sup>1‡</sup></span>
+            </p>
+
+            <!-- Bottom row: affiliations on the left, citation on the right -->
+            <div class="contrib__footer">
+              <div class="contrib__affil">
+                <ol class="contrib__affil-list">
+                  <li>Tsinghua University</li>
+                  <li>Tongji University</li>
+                  <li>Renmin University of China</li>
+                  <li>The University of Tokyo</li>
+                  <li>Lenovo Group</li>
+                  <li>Peking University</li>
+                  <li>University of Wisconsin–Madison</li>
+                  <li>Shanghai Qi Zhi Institute</li>
+                </ol>
+                <ul class="contrib__legend">
+                  <li><span class="contrib__legend-mark">*</span> Equal contribution</li>
+                  <li><span class="contrib__legend-mark">‡</span> Corresponding authors</li>
+                </ul>
+              </div>
+
+              <div class="contrib__citation">
+                <p class="contrib__citation-note">
+                  If our work inspired you, please cite us:
+                </p>
+                <div class="contrib__bibtex">
+                  <button class="contrib__copy" type="button" data-copy-bibtex aria-label="Copy BibTeX">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="9" y="9" width="11" height="11" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span class="contrib__copy-label">Copy</span>
+                  </button>
+<pre class="contrib__bibtex-code"><code><span class="bib-at">@article</span>{<span class="bib-key">wang2026egointrospect</span>,
+  <span class="bib-field">title</span>={EgoIntrospect: An Egocentric Dataset and Benchmark for User-Centric Internal State Reasoning},
+  <span class="bib-field">author</span>={Wang, Zeyu and Liu, Chang and Tjitrahardja, Eduardus and Wang, Yuntao and Pavlov, Borislav and Gou, Fangfei and Davila, Jose Manuel and Shi, Dai and Xu, Ran and Pan, Yue and others},
+  <span class="bib-field">journal</span>={arXiv preprint arXiv:2605.17262},
+  <span class="bib-field">year</span>={2026}
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -131,5 +576,6 @@
     <script src="./assets/data/hero-icons.js"></script>
     <script src="./assets/data/hero-cards.js"></script>
     <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/contrib.js"></script>
   </body>
 </html>

@@ -29,7 +29,10 @@
   }
   buildHeroTimeline(hero);
 
-  // 2. Snap between sections after the hero.
+  // 2. Section 02 — pinned horizontal feature carousel.
+  buildFeaturesCarousel();
+
+  // 3. Snap between sections after the hero.
   setupSectionSnap();
 
   // Recompute positions after fonts/images settle.
@@ -178,34 +181,186 @@
     tl.to(heroHold, { _: 1, duration: 0.6, ease: "none" });
   }
 
+  /**
+   * Section 02 — feature carousel.
+   *
+   * Controls:
+   *   - Prev / next buttons advance one slide at a time (wrap around).
+   *   - Dot indicators jump to a specific slide.
+   *   - Auto-cycle: while the section is in view, advance every
+   *     AUTO_INTERVAL ms. Pauses on any user interaction for
+   *     AUTO_PAUSE_AFTER_USER ms before resuming.
+   *
+   * The horizontal slide is a plain CSS transition on .features__track
+   * (driven by setting track.style.transform). No ScrollTrigger / pin —
+   * the section behaves as a regular 100vh snap target vertically.
+   */
+  function buildFeaturesCarousel() {
+    const section = document.querySelector("[data-features]");
+    if (!section) return;
+    const track = section.querySelector("[data-features-track]");
+    const slides = track ? Array.from(track.children) : [];
+    const prevBtn = section.querySelector("[data-features-prev]");
+    const nextBtn = section.querySelector("[data-features-next]");
+    const dots = Array.from(section.querySelectorAll("[data-dot]"));
+    if (!track || slides.length < 2) return;
+
+    // Tune timings here.
+    const AUTO_INTERVAL = 60000;        // ms between auto advances
+    const AUTO_PAUSE_AFTER_USER = 60000; // ms paused after a click
+
+    let activeIndex = 0;
+    let autoTimer = null;
+    let resumeTimer = null;
+    let inView = false;
+
+    function applyState() {
+      // Step measured from the DOM each time so it survives resize.
+      const step = slides[1].offsetLeft - slides[0].offsetLeft;
+      track.style.transform = `translate3d(${-activeIndex * step}px, 0, 0)`;
+      slides.forEach((s, i) =>
+        s.classList.toggle("slide--active", i === activeIndex)
+      );
+      dots.forEach((d, i) =>
+        d.classList.toggle("dot--active", i === activeIndex)
+      );
+    }
+
+    function goTo(i) {
+      const n = slides.length;
+      activeIndex = ((i % n) + n) % n;
+      applyState();
+    }
+    function next() { goTo(activeIndex + 1); }
+    function prev() { goTo(activeIndex - 1); }
+
+    function startAuto() {
+      stopAuto();
+      if (!inView) return;
+      autoTimer = setInterval(next, AUTO_INTERVAL);
+    }
+    function stopAuto() {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+      }
+    }
+    function pauseThenResume() {
+      stopAuto();
+      if (resumeTimer) clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => {
+        resumeTimer = null;
+        if (inView) startAuto();
+      }, AUTO_PAUSE_AFTER_USER);
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        prev();
+        pauseThenResume();
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        next();
+        pauseThenResume();
+      });
+    }
+    dots.forEach((d, i) =>
+      d.addEventListener("click", () => {
+        goTo(i);
+        pauseThenResume();
+      })
+    );
+
+    // Auto-cycle only while the section is at least half visible.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const nowInView =
+            entry.isIntersecting && entry.intersectionRatio >= 0.5;
+          if (nowInView === inView) return;
+          inView = nowInView;
+          if (inView && !resumeTimer) startAuto();
+          else if (!inView) stopAuto();
+        });
+      },
+      { threshold: [0, 0.5, 1] }
+    );
+    observer.observe(section);
+
+    // One-shot entrance for the orbit visual on slide 0. Fires a bit earlier
+    // (25% visible) than the auto-cycle observer so the stat nodes finish
+    // staggering in by the time the user has fully scrolled into view.
+    const orbitEl = section.querySelector(".glance__orbit");
+    if (orbitEl) {
+      const orbitObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+              orbitEl.classList.add("is-visible");
+              orbitObserver.disconnect();
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      orbitObserver.observe(section);
+    }
+
+    // Initial render + keep correct on resize (step depends on viewport width).
+    requestAnimationFrame(applyState);
+    window.addEventListener("resize", applyState);
+  }
+
+  /**
+   * Pairwise snap between adjacent [data-snap] sections.
+   *
+   * One ScrollTrigger per pair (a, b) with start = a.top@top and
+   * end = b.top@top. GSAP computes those positions correctly even when
+   * a or b is pinned (it uses the trigger's true document position, not
+   * the live getBoundingClientRect that would read 0 during a pin).
+   *
+   * `snapTo` only snaps when scroll progress is within ~4% of either
+   * endpoint — so the snap fires when entering/leaving the pair but does
+   * NOT yank the user mid-pin (mid-carousel, mid-hero-animation, etc.).
+   */
   function setupSectionSnap() {
     const snapSections = Array.from(document.querySelectorAll("[data-snap]"));
     if (snapSections.length < 2) return;
 
-    ScrollTrigger.create({
-      id: "page-snap",
-      trigger: snapSections[0],
-      start: "top top",
-      endTrigger: snapSections[snapSections.length - 1],
-      end: "top top",
-      snap: {
-        snapTo: (progress, self) => {
-          const range = self.end - self.start;
-          if (range <= 0) return progress;
-          const positions = snapSections.map(
-            (el) => el.getBoundingClientRect().top + window.scrollY
-          );
-          const current = self.start + progress * range;
-          const closest = positions.reduce((prev, curr) =>
-            Math.abs(curr - current) < Math.abs(prev - current) ? curr : prev
-          );
-          return (closest - self.start) / range;
+    // For a pair (a, b):
+    //   - If `a` is pinned with a scrubbed timeline (hero), use a tight edge
+    //     threshold so mid-pin scroll isn't yanked back to either endpoint.
+    //   - Otherwise snap to whichever endpoint is closer (classic full-snap).
+    const EDGE_TIGHT = 0.04;
+
+    for (let i = 0; i < snapSections.length - 1; i++) {
+      const a = snapSections[i];
+      const b = snapSections[i + 1];
+      const aIsPinScrub = a.hasAttribute("data-hero");
+
+      ScrollTrigger.create({
+        id: `page-snap-${i}`,
+        trigger: a,
+        start: "top top",
+        endTrigger: b,
+        end: "top top",
+        snap: {
+          snapTo: (progress) => {
+            if (aIsPinScrub) {
+              if (progress < EDGE_TIGHT) return 0;
+              if (progress > 1 - EDGE_TIGHT) return 1;
+              return progress;
+            }
+            return progress < 0.5 ? 0 : 1;
+          },
+          duration: { min: 0.3, max: 0.55 },
+          delay: 0.08,
+          ease: "power2.inOut",
         },
-        duration: { min: 0.3, max: 0.6 },
-        delay: 0.05,
-        ease: "power2.inOut",
-      },
-    });
+      });
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────

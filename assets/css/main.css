@@ -420,6 +420,958 @@ main {
   background: linear-gradient(180deg, #11131a 0%, #0b0b0f 100%);
 }
 
+/* ---------- Features carousel (pinned horizontal) ---------- *
+ *  Layout: 3 rows — header (auto) / viewport (1fr) / footer (auto).
+ *  Each slide is 76vw with a 2vw gap; the track's 12vw side padding centers
+ *  slide 0 in the viewport so slide 1 peeks ~10–12% on the right edge.
+ *  JS handles the horizontal translation (scrubbed by scroll progress).
+ */
+.features {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 50% at 20% 30%, rgba(124, 92, 255, 0.16), transparent 60%),
+    radial-gradient(55% 50% at 90% 80%, rgba(33, 193, 255, 0.13), transparent 60%),
+    linear-gradient(180deg, #0b0b0f 0%, #0d0e16 100%);
+}
+
+.features__stage {
+  position: relative;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 96px 0 34px;
+  gap: 22px;
+}
+
+.features__viewport {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.features__track {
+  display: flex;
+  gap: 0;
+  height: 100%;
+  padding: 0;
+  will-change: transform;
+  align-items: stretch;
+  /* Slide transition — JS sets translate3d on click / auto-cycle. */
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* --- Prev / next nav buttons --- */
+.features__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  transform: translateY(-50%);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.features__nav:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.26);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.features__nav:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.features__nav--prev {
+  left: clamp(16px, 3vw, 36px);
+}
+
+.features__nav--next {
+  right: clamp(16px, 3vw, 36px);
+}
+
+.features__nav svg {
+  width: 20px;
+  height: 20px;
+}
+
+.slide {
+  flex: 0 0 100vw;
+  position: relative;
+  height: 100%;
+  display: flex;
+  /* Slides are full-bleed layouts now — no card box. */
+}
+
+.slide-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ---------- Slide 0: "EgoIntrospect at a Glance" ---------- *
+ *  Sizing model:
+ *    - The canvas (.glance) scales WITH the viewport up to 2000px and only
+ *      caps there — so on wide monitors the layout stays proportional
+ *      instead of huddling in the middle.
+ *    - Everything inside (title, body, orbit, cards) is sized by a vw-based
+ *      clamp(min, vw, max). On any common desktop width the elements scale
+ *      together; the max values keep them sane on 4K+.
+ *    - Vertical stack uses flex+justify-content:center so surplus height
+ *      stays as symmetric margin above and below the content, never as a
+ *      gap inside it.
+ */
+.glance {
+  width: 100%;
+  height: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(22px, 2.6vh, 52px);
+  padding: 0 clamp(40px, 5vw, 140px);
+  box-sizing: border-box;
+}
+
+.glance__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 3vw, 80px);
+  align-items: center;
+  min-height: 0;
+}
+
+.glance__lead {
+  /* Wide enough that the 24-char headline holds on one line at the title's
+     vw-scaled size from 1024px up through 2000px. */
+  max-width: clamp(420px, 38vw, 760px);
+}
+
+.glance__eyebrow {
+  font-size: clamp(11px, 0.78vw, 15px);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #b8b6dd;
+  opacity: 0.72;
+  margin-bottom: clamp(12px, 1.1vw, 22px);
+}
+
+.glance__title {
+  font-size: clamp(30px, 3.2vw, 64px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  margin: 0 0 clamp(16px, 1.4vw, 28px);
+  background: linear-gradient(180deg, #ffffff 0%, #c3c6dc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glance__body {
+  font-size: clamp(14px, 1.1vw, 20px);
+  line-height: 1.6;
+  color: rgba(235, 232, 255, 0.74);
+  margin: 0;
+  max-width: clamp(380px, 32vw, 620px);
+}
+
+/* --- Orbit visualization ---
+   Container aspect matches the SVG viewBox (560 / 400 = 1.4) so the
+   <svg> fills the box edge-to-edge. Stats placed with % positions then
+   sit predictably along the orbit's visual perimeter instead of getting
+   pushed out to the page corners. */
+.glance__orbit {
+  position: relative;
+  width: 100%;
+  /* Width scales with viewport, capped at 880 — same shape as the lead's
+     max-width clamp so the two columns stay balanced. */
+  max-width: clamp(440px, 42vw, 880px);
+  /* Hard ceiling so the orbit shrinks on short windows instead of pushing
+     the bottom cards off-screen. 50vh ≈ 60% of the slide's content area. */
+  max-height: 50vh;
+  aspect-ratio: 1.4 / 1;
+  justify-self: end;
+  align-self: center;
+}
+
+.orbit-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── Mode B: pre-rendered PNG version ──
+ * Hidden by default; revealed when .glance__orbit has
+ * data-orbit-mode="image". Sits at the same size/position as the SVG
+ * orbit so positions match no matter which version is chosen. */
+.orbit-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+  pointer-events: none;
+}
+
+/* When data-orbit-mode="image", flip visibility: show the PNG, hide
+ * every hand-built element (orbit SVG, central core SVG, stat callouts). */
+.glance__orbit[data-orbit-mode="image"] .orbit-bg,
+.glance__orbit[data-orbit-mode="image"] .orbit__core,
+.glance__orbit[data-orbit-mode="image"] .stat {
+  display: none;
+}
+.glance__orbit[data-orbit-mode="image"] .orbit-image {
+  display: block;
+}
+
+.stat {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 0.8vw, 16px);
+  z-index: 3;
+  /* Entrance state — see .glance__orbit.is-visible rules below. */
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Each callout positioned at its connector's outer endpoint.
+   - Top/bottom callouts stay horizontal (row / row-reverse).
+   - Left callout stacks vertically with text ABOVE the icon (column-reverse).
+   - Right callout stacks vertically with text BELOW the icon (column).
+   - Bottom callout is nudged up so its lower edge clears the cards beneath. */
+.stat--top    { top:  -1%;  left: 41%; }
+.stat--right  {
+  top:  39%;  right: -2%;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: clamp(6px, 0.4vw, 10px);
+  text-align: right;
+}
+.stat--bottom { bottom: 4%; right: 19%; flex-direction: row-reverse; }
+.stat--left   {
+  top:  29%;  left: -2%;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: clamp(6px, 0.4vw, 10px);
+}
+
+/* Hologram-style frosted icon — replaces the dashed circle */
+.stat__icon {
+  width:  clamp(52px, 3.4vw, 80px);
+  height: clamp(52px, 3.4vw, 80px);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #f0d6ff;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.22), transparent 45%),
+    rgba(20, 14, 52, 0.55);
+  border: 1px solid rgba(216, 108, 255, 0.55);
+  box-shadow:
+    0 0 18px rgba(216, 108, 255, 0.5),
+    inset 0 0 16px rgba(124, 92, 255, 0.22);
+  backdrop-filter: blur(8px) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  flex-shrink: 0;
+}
+
+/* Right + bottom callouts get a cyan tint to match the reference design. */
+.stat--right .stat__icon,
+.stat--bottom .stat__icon {
+  color: #b8edff;
+  border-color: rgba(33, 193, 255, 0.6);
+  box-shadow:
+    0 0 16px rgba(33, 193, 255, 0.4),
+    inset 0 0 14px rgba(33, 193, 255, 0.2);
+}
+
+.stat__icon svg {
+  width:  clamp(22px, 1.7vw, 36px);
+  height: clamp(22px, 1.7vw, 36px);
+}
+
+.stat__num {
+  font-size: clamp(20px, 1.85vw, 38px);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+.stat__label {
+  font-size: clamp(10px, 0.72vw, 14px);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgba(199, 195, 232, 0.72);
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+/* ---- Central data core (SVG-based: halo + 6 concentric rings + bright blob) *
+ *  Sized as a % of .glance__orbit so the core scales with the surrounding
+ *  visualization. SMIL <animate> elements inside the SVG handle the breathing
+ *  of the central blob; no CSS keyframes needed here. */
+.orbit__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* Sized so the BRIGHT inner-ring group's outer diameter ≈ 30% of the
+     orbit container width — about half the distance between the top (180h)
+     and bottom (3 dimensions) data points.
+     Math: with outermost bright ring at r=50 in a 200-viewBox, the bright
+     group diameter is 100/200 = 50% of the SVG. Multiply by core width 60%
+     of container → 50% × 60% = 30% container width. */
+  width: 60%;
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 0 24px rgba(124, 92, 255, 0.32));
+}
+
+.orbit__core-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* Entrance: stat nodes fade in with a staggered delay once the orbit
+   container becomes visible (JS toggles .is-visible via IntersectionObserver). */
+.glance__orbit.is-visible .stat {
+  opacity: 1;
+  transform: none;
+}
+
+.glance__orbit.is-visible .stat--top    { transition-delay: 0.10s; }
+.glance__orbit.is-visible .stat--left   { transition-delay: 0.25s; }
+.glance__orbit.is-visible .stat--right  { transition-delay: 0.40s; }
+.glance__orbit.is-visible .stat--bottom { transition-delay: 0.55s; }
+
+/* --- Bottom row of 3 feature cards --- */
+.glance__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 1.3vw, 28px);
+}
+
+/* Each card declares an --accent (and a softer glow tint). All colored
+ * elements inside — number, underline, icon, border gradient, outer glow —
+ * read from these vars so swapping a card's color is a one-line change. */
+.glance-card {
+  --accent: #d65cff;
+  --accent-glow: rgba(214, 92, 255, 0.22);
+
+  position: relative;
+  padding: clamp(20px, 1.8vw, 34px) clamp(22px, 1.8vw, 36px);
+  border-radius: clamp(14px, 1vw, 22px);
+  /* Nearly transparent: just a hair of warm tint at the top-left so it
+     reads as a card without an obvious filled box. */
+  background:
+    radial-gradient(
+      ellipse at 0% 0%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+      transparent 55%
+    ),
+    rgba(255, 255, 255, 0.012);
+  border: 1px solid transparent; /* real border drawn by ::before */
+  box-shadow:
+    0 0 28px -8px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Gradient border via masked pseudo-element. The mask trick: paint a
+ * gradient on the whole padding box, then subtract the content box,
+ * leaving only the 1px-wide ring along the rounded rectangle's edge. */
+.glance-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.2px;
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    color-mix(in srgb, var(--accent) 35%, transparent) 28%,
+    rgba(255, 255, 255, 0.04) 50%,
+    color-mix(in srgb, var(--accent) 25%, transparent) 72%,
+    var(--accent) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Per-card accent: distinct color identity matching the reference */
+.glance-card:nth-child(1) {
+  --accent: #d65cff;                        /* magenta/pink */
+  --accent-glow: rgba(214, 92, 255, 0.22);
+}
+.glance-card:nth-child(2) {
+  --accent: #7c6cff;                        /* blue-violet */
+  --accent-glow: rgba(124, 108, 255, 0.22);
+}
+.glance-card:nth-child(3) {
+  --accent: #21c1ff;                        /* cyan */
+  --accent-glow: rgba(33, 193, 255, 0.22);
+}
+
+.glance-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.glance-card__num {
+  font-size: clamp(13px, 1vw, 18px);
+  letter-spacing: 0.45em;
+  color: var(--accent);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Short colored underline tied to the number — anchors the card's accent */
+.glance-card__num::after {
+  content: "";
+  display: block;
+  width: clamp(34px, 2.6vw, 56px);
+  height: 1.5px;
+  background: var(--accent);
+  margin-top: clamp(10px, 1vw, 16px);
+  opacity: 0.9;
+  border-radius: 2px;
+}
+
+/* Strip the icon tile — just the line-art SVG glowing in accent color. */
+.glance-card__icon {
+  width: auto;
+  height: auto;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glance-card__icon svg {
+  width:  clamp(26px, 2vw, 40px);
+  height: clamp(26px, 2vw, 40px);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+
+.glance-card__title {
+  font-size: clamp(16px, 1.3vw, 24px);
+  font-weight: 600;
+  line-height: 1.3;
+  color: #ffffff;
+  margin: clamp(10px, 1.1vw, 18px) 0 0;
+  position: relative;
+  z-index: 1;
+}
+
+.glance-card__body {
+  font-size: clamp(13px, 0.95vw, 17px);
+  line-height: 1.55;
+  color: rgba(225, 222, 245, 0.62);
+  margin: clamp(12px, 1.2vw, 20px) 0 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Glance responsive breakpoints ────────────────────────────────────── */
+
+/* Tight desktop (≤1100px) — narrower side padding, slightly closer columns */
+@media (max-width: 1100px) {
+  .glance {
+    padding: 0 4vw;
+  }
+  .glance__top {
+    gap: 28px;
+  }
+}
+
+/* Tablet portrait & landscape phone (≤820px) — stack title above orbit. */
+@media (max-width: 820px) {
+  .features__stage {
+    padding: 88px 0 28px;
+    gap: 16px;
+  }
+  .glance {
+    padding: 0 5vw;
+  }
+  .glance__top {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .glance__lead {
+    max-width: 100%;
+    text-align: left;
+  }
+  .glance__orbit {
+    max-width: 440px;
+    justify-self: center;
+    aspect-ratio: 1.5 / 1;
+  }
+}
+
+/* Phone portrait (≤600px) — stack the three feature cards too,
+   shrink stat callout type so 4 labels don't collide in a tiny orbit. */
+@media (max-width: 600px) {
+  .features__stage {
+    padding: 76px 0 24px;
+  }
+  .glance__cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .glance-card {
+    padding: 14px 16px 16px;
+  }
+  .stat__icon {
+    width: 32px;
+    height: 32px;
+  }
+  .stat__icon svg {
+    width: 15px;
+    height: 15px;
+  }
+  .stat__num {
+    font-size: 17px;
+  }
+  .stat__label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+  .features__nav {
+    width: 40px;
+    height: 40px;
+  }
+  .features__nav--prev { left: 8px; }
+  .features__nav--next { right: 8px; }
+}
+
+.features__footer {
+  padding: 0 6vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.features__dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: width 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+    background 0.35s ease;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.dot--active {
+  width: 30px;
+  background: linear-gradient(90deg, #7c5cff, #21c1ff);
+}
+
+@media (max-width: 720px) {
+  .features__stage {
+    padding: 100px 0 28px;
+    gap: 18px;
+  }
+  .features__track {
+    padding: 0 6vw;
+  }
+  .slide {
+    flex: 0 0 86vw;
+    border-radius: 22px;
+  }
+}
+
+/* ---------- Contributors & Citation ---------- */
+.contrib {
+  /* override .section centering so content can be wider and top-anchored */
+  align-items: flex-start;
+  padding: 110px 32px 56px;
+  background:
+    radial-gradient(75% 60% at 20% 10%, rgba(124, 92, 255, 0.16), transparent 60%),
+    radial-gradient(60% 55% at 90% 85%, rgba(33, 193, 255, 0.12), transparent 60%),
+    linear-gradient(180deg, #0b0b0f 0%, #0b0b0f 100%);
+}
+
+.contrib__inner {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.contrib__title {
+  font-size: clamp(32px, 4vw, 60px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 28px;
+  background: linear-gradient(180deg, #ffffff 0%, #c3c6dc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 16px rgba(18, 14, 38, 0.5));
+}
+
+/* Outer rounded panel — single frosted card holding the whole section */
+.contrib__panel {
+  position: relative;
+  border-radius: 26px;
+  padding: 44px clamp(28px, 3.6vw, 56px) 40px;
+  background: linear-gradient(
+    160deg,
+    rgba(40, 30, 78, 0.78) 0%,
+    rgba(24, 19, 50, 0.78) 55%,
+    rgba(16, 14, 36, 0.78) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 22px 60px -18px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+/* Soft purple glow accents inside the panel */
+.contrib__panel::before {
+  content: "";
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 60%;
+  height: 90%;
+  background: radial-gradient(closest-side, rgba(124, 92, 255, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+/* --- Avatar row --- */
+.contrib__avatars {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.avatar__circle {
+  position: relative;
+  width: clamp(60px, 6.2vw, 92px);
+  height: clamp(60px, 6.2vw, 92px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: clamp(18px, 1.7vw, 26px);
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--av-a, #7c5cff) 0%, var(--av-b, #21c1ff) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 24px -6px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* Initials sit at center as a fallback; the photo (if present) covers them. */
+.avatar__initials {
+  position: relative;
+  z-index: 0;
+}
+
+.avatar__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  display: block;
+}
+
+.avatar__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.avatar__name sup {
+  font-size: 10px;
+  margin-left: 2px;
+  color: #b8b6dd;
+  font-weight: 600;
+  vertical-align: super;
+}
+
+.avatar__link {
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(90deg, rgba(184, 182, 221, 0.6), rgba(184, 182, 221, 0.6));
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.25s ease, color 0.25s ease;
+}
+
+.avatar__link:hover {
+  color: #c8c4ff;
+  background-size: 100% 1px;
+}
+
+/* --- Full author list --- */
+.contrib__authors {
+  position: relative;
+  z-index: 1;
+  margin: 36px 0 32px;
+  font-size: 13.5px;
+  line-height: 1.9;
+  color: rgba(245, 245, 247, 0.8);
+  letter-spacing: 0.005em;
+}
+
+.contrib__author strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.contrib__author sup {
+  font-size: 10px;
+  opacity: 0.78;
+  font-weight: 500;
+  margin-left: 1px;
+}
+
+/* --- Footer: affiliations (narrow, single column) + bibtex (wider) --- */
+.contrib__footer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.6fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.contrib__affil-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  counter-reset: affil;
+  font-size: 13px;
+  color: rgba(245, 245, 247, 0.74);
+}
+
+.contrib__affil-list li {
+  counter-increment: affil;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.55;
+}
+
+.contrib__affil-list li::before {
+  content: counter(affil);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #b8b6dd;
+}
+
+.contrib__legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(245, 245, 247, 0.62);
+}
+
+.contrib__legend-mark {
+  display: inline-block;
+  width: 12px;
+  color: #b8b6dd;
+  font-weight: 700;
+}
+
+/* --- Citation / BibTeX --- */
+.contrib__citation-note {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: rgba(245, 245, 247, 0.72);
+}
+
+.contrib__bibtex {
+  position: relative;
+  border-radius: 14px;
+  background: rgba(8, 6, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.contrib__bibtex-code {
+  margin: 0;
+  padding: 20px 22px;
+  font-family: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #d6d6ec;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.contrib__bibtex-code .bib-at {
+  color: #b794ff;
+  font-weight: 600;
+}
+
+.contrib__bibtex-code .bib-key {
+  color: #ffd28a;
+}
+
+.contrib__bibtex-code .bib-field {
+  color: #7ec7ff;
+}
+
+.contrib__copy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.contrib__copy:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.contrib__copy:active {
+  transform: translateY(1px);
+}
+
+.contrib__copy svg {
+  width: 12px;
+  height: 12px;
+}
+
+.contrib__copy.is-copied {
+  background: rgba(124, 92, 255, 0.25);
+  border-color: rgba(124, 92, 255, 0.5);
+}
+
+/* --- Responsive --- */
+@media (max-width: 960px) {
+  .contrib__avatars {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 20px 14px;
+  }
+  .contrib__footer {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 560px) {
+  .contrib {
+    padding: 96px 16px 40px;
+  }
+  .contrib__panel {
+    padding: 26px 18px;
+    border-radius: 20px;
+  }
+  .contrib__avatars {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 /* ---------- Placeholder pages ---------- */
 .placeholder {
   min-height: 100vh;
