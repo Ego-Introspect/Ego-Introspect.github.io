@@ -6,7 +6,7 @@
   // To add a real photo: drop the file into ./assets/contrib/ and set `photo`.
   // To add a homepage link: set `url`. Both fields are optional.
   const AVATARS = [
-    { initials: "ZW", name: "Zeyu Wang",             mark: "*", grad: ["#7c5cff", "#21c1ff"], photo: "./assets/contrib/zeyu-wang.jpg",       url: "https://sky-wang326.github.io/" },
+    { initials: "ZW", name: "Zeyu Wang",             mark: "*", grad: ["#7c5cff", "#21c1ff"], photo: "./assets/contrib/zeyu-wang.JPG",       url: "https://sky-wang326.github.io/" },
     { initials: "CL", name: "Chang Liu",             mark: "*", grad: ["#7c5cff", "#b85cff"], photo: "./assets/contrib/chang-liu.jpg",       url: "" },
     { initials: "ET", name: "Eduardus Tjitrahardja",            grad: ["#5c8bff", "#21c1ff"], photo: "./assets/contrib/eduardus-tjitrahardja.jpg", url: "https://www.edutjie.net/" },
     { initials: "BP", name: "Borislav Pavlov",                  grad: ["#5c5cff", "#21c1ff"], photo: "./assets/contrib/borislav-pavlov.jpg", url: "" },
