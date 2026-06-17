@@ -35,6 +35,11 @@
   // 3. Snap between sections after the hero.
   setupSectionSnap();
 
+  // 4. Slide 1 (Feature 01) — dynamically align flow-arrow curves so each
+  //    dashed line ends at the actual vertical center of its corresponding
+  //    obs-item / meaning-card. Runs on load + resize + after media settles.
+  setupFeature1Arrows();
+
   // Recompute positions after fonts/images settle.
   window.addEventListener("load", () => ScrollTrigger.refresh());
 
@@ -44,7 +49,7 @@
     const layer = hero.querySelector("[data-cards-layer]");
     if (!layer) return;
 
-    cards.forEach((c, i) => {
+    cards.forEach((c) => {
       const el = document.createElement("div");
       el.className = `card card--${c.layer || "mid"}`;
       el.dataset.layer = c.layer || "mid";
@@ -325,6 +330,94 @@
    * endpoint — so the snap fires when entering/leaving the pair but does
    * NOT yank the user mid-pin (mid-carousel, mid-hero-animation, etc.).
    */
+  /**
+   * Slide 1 (Feature 01) — dynamic flow-arrow alignment.
+   *
+   * One overlay SVG sits absolutely positioned over .feature1__columns. Its
+   * viewBox is reset on every update to the wrap's pixel dimensions, so all
+   * path coordinates are in pixels and match real on-screen positions.
+   *
+   * For each of the 7 curves we anchor:
+   *   • LEFT  (×4): obs-item's right-center → moment frame's left-center
+   *   • RIGHT (×3): moment frame's right-center → meaning-card's left-center
+   * A short horizontal offset is added at each endpoint so the curve doesn't
+   * literally touch the element — it visually "emerges" from the edge.
+   */
+  function setupFeature1Arrows() {
+    const wrap = document.querySelector(".feature1__columns");
+    if (!wrap) return;
+
+    function update() {
+      const svg = wrap.querySelector(".feature1__flow-svg");
+      if (!svg) return;
+      const wrapRect = wrap.getBoundingClientRect();
+      if (wrapRect.width === 0 || wrapRect.height === 0) return;
+
+      svg.setAttribute("viewBox", `0 0 ${wrapRect.width} ${wrapRect.height}`);
+
+      const moment = wrap.querySelector(".moment-frame");
+      if (!moment) return;
+      const mRect = moment.getBoundingClientRect();
+      const momentLeftX  = mRect.left  - wrapRect.left;
+      const momentRightX = mRect.right - wrapRect.left;
+      const momentCenterY = mRect.top + mRect.height / 2 - wrapRect.top;
+
+      const GAP = 8; // small visual gap between element edge and curve endpoint
+
+      // LEFT: 4 obs items → moment left-center
+      const leftPaths = wrap.querySelectorAll(".flow-arrows--left path");
+      const items = wrap.querySelectorAll(".obs-item");
+      items.forEach((item, i) => {
+        if (i >= leftPaths.length) return;
+        const r = item.getBoundingClientRect();
+        const startX = (r.right - wrapRect.left) + GAP;
+        const startY = r.top + r.height / 2 - wrapRect.top;
+        const endX   = momentLeftX - GAP;
+        const endY   = momentCenterY;
+
+        // Cubic Bezier — keep both endpoints' tangents horizontal so the
+        // curve leaves the item to the right and arrives at the moment
+        // frame from the left, sweeping gracefully in between.
+        const span = endX - startX;
+        const cp1X = startX + span * 0.45;
+        const cp1Y = startY;
+        const cp2X = startX + span * 0.55;
+        const cp2Y = endY;
+        leftPaths[i].setAttribute(
+          "d",
+          `M ${startX.toFixed(1)} ${startY.toFixed(1)} C ${cp1X.toFixed(1)} ${cp1Y.toFixed(1)}, ${cp2X.toFixed(1)} ${cp2Y.toFixed(1)}, ${endX.toFixed(1)} ${endY.toFixed(1)}`
+        );
+      });
+
+      // RIGHT: moment right-center → 3 meaning cards
+      const rightPaths = wrap.querySelectorAll(".flow-arrows--right path");
+      const cards = wrap.querySelectorAll(".meaning-card");
+      cards.forEach((card, i) => {
+        if (i >= rightPaths.length) return;
+        const r = card.getBoundingClientRect();
+        const startX = momentRightX + GAP;
+        const startY = momentCenterY;
+        const endX   = (r.left - wrapRect.left) - GAP;
+        const endY   = r.top + r.height / 2 - wrapRect.top;
+
+        const span = endX - startX;
+        const cp1X = startX + span * 0.45;
+        const cp1Y = startY;
+        const cp2X = startX + span * 0.55;
+        const cp2Y = endY;
+        rightPaths[i].setAttribute(
+          "d",
+          `M ${startX.toFixed(1)} ${startY.toFixed(1)} C ${cp1X.toFixed(1)} ${cp1Y.toFixed(1)}, ${cp2X.toFixed(1)} ${cp2Y.toFixed(1)}, ${endX.toFixed(1)} ${endY.toFixed(1)}`
+        );
+      });
+    }
+
+    function schedule() { requestAnimationFrame(update); }
+    schedule();
+    window.addEventListener("load", schedule);
+    window.addEventListener("resize", schedule);
+  }
+
   function setupSectionSnap() {
     const snapSections = Array.from(document.querySelectorAll("[data-snap]"));
     if (snapSections.length < 2) return;

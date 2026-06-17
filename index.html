@@ -431,9 +431,366 @@
                 </div>
               </article>
 
-              <!-- Slides 1–3 — placeholders until their layouts are designed -->
+              <!-- Slide 1 — Feature 01: Labels Only the Wearer Can Provide -->
               <article class="slide" data-slide="1">
-                <div class="slide-placeholder">Slide 02 — coming soon</div>
+                <div class="feature1">
+                  <header class="feature1__header">
+                    <h2 class="feature1__title">Labels Only the Wearer Can Provide</h2>
+                    <p class="feature1__subtitle">
+                      Egocentric video captures what happened.
+                      EgoIntrospect captures
+                      <span class="feature1__mark">what the moment meant</span>
+                      to the wearer.
+                    </p>
+                  </header>
+
+                  <div class="feature1__columns">
+                    <!-- Single overlay SVG covering the whole columns row.
+                         JS (setupFeature1Arrows) writes the 4 left + 3 right
+                         curves with pixel coordinates anchored to each item's
+                         and the moment frame's actual bounding rect. -->
+                    <svg class="feature1__flow-svg" preserveAspectRatio="none" aria-hidden="true">
+                      <g class="flow-arrows--left" fill="none" stroke="#21c1ff" stroke-width="1.3" stroke-opacity="0.55"
+                         stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 4">
+                        <path/><path/><path/><path/>
+                      </g>
+                      <g class="flow-arrows--right" fill="none" stroke="#d65cff" stroke-width="1.3" stroke-opacity="0.55"
+                         stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 4">
+                        <path/><path/><path/>
+                      </g>
+                    </svg>
+
+                    <!-- LEFT: External observer view -->
+                    <section class="feature1__col feature1__col--observer">
+                      <header class="feature1__col-head">
+                        <div class="feature1__col-eyebrow">External Observer</div>
+                        <h3 class="feature1__col-q">What happened?</h3>
+                        <div class="feature1__col-sub">Objective facts anyone can see</div>
+                      </header>
+
+                      <ul class="obs-list">
+                        <li class="obs-item">
+                          <span class="obs-item__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                              <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                          </span>
+                          <div class="obs-item__content">
+                            <div class="obs-item__label">Objects</div>
+                            <div class="obs-item__examples">tray, phone, mug</div>
+                          </div>
+                        </li>
+                        <li class="obs-item">
+                          <span class="obs-item__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                              <polygon points="6 3 20 12 6 21 6 3"/>
+                            </svg>
+                          </span>
+                          <div class="obs-item__content">
+                            <div class="obs-item__label">Actions</div>
+                            <div class="obs-item__examples">open, pour, walk</div>
+                          </div>
+                        </li>
+                        <li class="obs-item">
+                          <span class="obs-item__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="3" y="4" width="18" height="16" rx="2"/>
+                              <circle cx="9" cy="10" r="1.6"/>
+                              <path d="M21 16l-5-5L5 20"/>
+                            </svg>
+                          </span>
+                          <div class="obs-item__content">
+                            <div class="obs-item__label">Scenes</div>
+                            <div class="obs-item__examples">kitchen, sidewalk, café</div>
+                          </div>
+                        </li>
+                        <li class="obs-item">
+                          <span class="obs-item__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="9" y="2" width="6" height="13" rx="3"/>
+                              <path d="M5 11v1a7 7 0 0 0 14 0v-1"/>
+                              <line x1="12" y1="19" x2="12" y2="22"/>
+                            </svg>
+                          </span>
+                          <div class="obs-item__content">
+                            <div class="obs-item__label">Speech / Audio</div>
+                            <div class="obs-item__examples">"can you grab…", music</div>
+                          </div>
+                        </li>
+                      </ul>
+                    </section>
+
+                    <!-- MIDDLE: The same moment, captured -->
+                    <section class="feature1__moment">
+                      <div class="moment-frame" aria-label="Video placeholder">
+                        <span class="moment-frame__corner moment-frame__corner--tl" aria-hidden="true"></span>
+                        <span class="moment-frame__corner moment-frame__corner--tr" aria-hidden="true"></span>
+                        <span class="moment-frame__corner moment-frame__corner--bl" aria-hidden="true"></span>
+                        <span class="moment-frame__corner moment-frame__corner--br" aria-hidden="true"></span>
+                        <div class="moment-frame__video">
+                          <video
+                            class="moment-frame__media"
+                            src="./assets/homepage/page2_page2.mp4"
+                            autoplay muted loop playsinline preload="metadata"
+                            onloadedmetadata="this.playbackRate=2"
+                          ></video>
+                        </div>
+                      </div>
+
+                      <div class="moment-waveform" aria-hidden="true">
+                        <svg viewBox="0 0 240 24" preserveAspectRatio="none">
+                          <g fill="currentColor">
+                            <rect x="0"   y="10" width="1.6" height="4"/>
+                            <rect x="4"   y="8"  width="1.6" height="8"/>
+                            <rect x="8"   y="5"  width="1.6" height="14"/>
+                            <rect x="12"  y="2"  width="1.6" height="20"/>
+                            <rect x="16"  y="7"  width="1.6" height="10"/>
+                            <rect x="20"  y="9"  width="1.6" height="6"/>
+                            <rect x="24"  y="4"  width="1.6" height="16"/>
+                            <rect x="28"  y="1"  width="1.6" height="22"/>
+                            <rect x="32"  y="6"  width="1.6" height="12"/>
+                            <rect x="36"  y="9"  width="1.6" height="6"/>
+                            <rect x="40"  y="3"  width="1.6" height="18"/>
+                            <rect x="44"  y="7"  width="1.6" height="10"/>
+                            <rect x="48"  y="10" width="1.6" height="4"/>
+                            <rect x="52"  y="5"  width="1.6" height="14"/>
+                            <rect x="56"  y="8"  width="1.6" height="8"/>
+                            <rect x="60"  y="4"  width="1.6" height="16"/>
+                            <rect x="64"  y="2"  width="1.6" height="20"/>
+                            <rect x="68"  y="6"  width="1.6" height="12"/>
+                            <rect x="72"  y="9"  width="1.6" height="6"/>
+                            <rect x="76"  y="11" width="1.6" height="2"/>
+                            <rect x="80"  y="7"  width="1.6" height="10"/>
+                            <rect x="84"  y="3"  width="1.6" height="18"/>
+                            <rect x="88"  y="0"  width="1.6" height="24"/>
+                            <rect x="92"  y="4"  width="1.6" height="16"/>
+                            <rect x="96"  y="8"  width="1.6" height="8"/>
+                            <rect x="100" y="10" width="1.6" height="4"/>
+                            <rect x="104" y="6"  width="1.6" height="12"/>
+                            <rect x="108" y="3"  width="1.6" height="18"/>
+                            <rect x="112" y="7"  width="1.6" height="10"/>
+                            <rect x="116" y="9"  width="1.6" height="6"/>
+                            <rect x="120" y="5"  width="1.6" height="14"/>
+                            <rect x="124" y="2"  width="1.6" height="20"/>
+                            <rect x="128" y="8"  width="1.6" height="8"/>
+                            <rect x="132" y="11" width="1.6" height="2"/>
+                            <rect x="136" y="7"  width="1.6" height="10"/>
+                            <rect x="140" y="4"  width="1.6" height="16"/>
+                            <rect x="144" y="6"  width="1.6" height="12"/>
+                            <rect x="148" y="9"  width="1.6" height="6"/>
+                            <rect x="152" y="3"  width="1.6" height="18"/>
+                            <rect x="156" y="7"  width="1.6" height="10"/>
+                            <rect x="160" y="10" width="1.6" height="4"/>
+                            <rect x="164" y="5"  width="1.6" height="14"/>
+                            <rect x="168" y="8"  width="1.6" height="8"/>
+                            <rect x="172" y="4"  width="1.6" height="16"/>
+                            <rect x="176" y="2"  width="1.6" height="20"/>
+                            <rect x="180" y="6"  width="1.6" height="12"/>
+                            <rect x="184" y="9"  width="1.6" height="6"/>
+                            <rect x="188" y="11" width="1.6" height="2"/>
+                            <rect x="192" y="7"  width="1.6" height="10"/>
+                            <rect x="196" y="3"  width="1.6" height="18"/>
+                            <rect x="200" y="6"  width="1.6" height="12"/>
+                            <rect x="204" y="9"  width="1.6" height="6"/>
+                            <rect x="208" y="5"  width="1.6" height="14"/>
+                            <rect x="212" y="10" width="1.6" height="4"/>
+                            <rect x="216" y="7"  width="1.6" height="10"/>
+                            <rect x="220" y="4"  width="1.6" height="16"/>
+                            <rect x="224" y="8"  width="1.6" height="8"/>
+                            <rect x="228" y="10" width="1.6" height="4"/>
+                            <rect x="232" y="9"  width="1.6" height="6"/>
+                            <rect x="236" y="11" width="1.6" height="2"/>
+                          </g>
+                        </svg>
+                      </div>
+
+                      <p class="feature1__moment-caption">
+                        One egocentric record pairs first-person observation with wearer-provided meaning across
+                        <span class="moment-mark">six daily-life scenarios</span>.
+                      </p>
+                    </section>
+
+                    <!-- RIGHT: Wearer-provided meaning -->
+                    <section class="feature1__col feature1__col--meaning">
+                      <header class="feature1__col-head">
+                        <div class="feature1__col-eyebrow">Wearer-Provided Meaning</div>
+                        <div class="feature1__col-sub">Subjective state only I can report</div>
+                      </header>
+                      <h3 class="feature1__col-q">What did it mean to me?</h3>
+
+                      <div class="meaning-cards">
+                        <article class="meaning-card" style="--accent:#ffc56c">
+                          <span class="meaning-card__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                              <circle cx="12" cy="12" r="9"/>
+                              <path d="M8 14c1.2 1.4 2.4 2.2 4 2.2s2.8-.8 4-2.2"/>
+                              <circle cx="9" cy="10" r="0.9" fill="currentColor"/>
+                              <circle cx="15" cy="10" r="0.9" fill="currentColor"/>
+                            </svg>
+                          </span>
+                          <div class="meaning-card__body">
+                            <h4 class="meaning-card__title">Affective Experience</h4>
+                            <p class="meaning-card__desc">What did I feel? What moment mattered?</p>
+                            <p class="meaning-card__quote">&ldquo;I felt surprised because it was so cheap.&rdquo;</p>
+                          </div>
+                          <div class="meaning-card__caps">
+                            <span class="meaning-card__cap">Moment of Recording</span>
+                            <span class="meaning-card__cap">Emotion Analysis</span>
+                          </div>
+                        </article>
+
+                        <article class="meaning-card" style="--accent:#ff7c9c">
+                          <span class="meaning-card__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                              <circle cx="12" cy="12" r="9"/>
+                              <circle cx="12" cy="12" r="5"/>
+                              <circle cx="12" cy="12" r="1.6" fill="currentColor"/>
+                            </svg>
+                          </span>
+                          <div class="meaning-card__body">
+                            <h4 class="meaning-card__title">Interactive Intent</h4>
+                            <p class="meaning-card__desc">What did I want the assistant to do? When should it help?</p>
+                            <p class="meaning-card__quote">&ldquo;I need help finding local food nearby.&rdquo;</p>
+                          </div>
+                          <div class="meaning-card__caps">
+                            <span class="meaning-card__cap">Contextual Request</span>
+                            <span class="meaning-card__cap">Proactive Recommendation</span>
+                          </div>
+                        </article>
+
+                        <article class="meaning-card" style="--accent:#5cffaa">
+                          <span class="meaning-card__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M7 16a4 4 0 0 1-1-7.87A5 5 0 0 1 16 7a4 4 0 0 1 1 7.87"/>
+                              <path d="M12 10v6"/>
+                              <circle cx="12" cy="19" r="1.4" fill="currentColor"/>
+                            </svg>
+                          </span>
+                          <div class="meaning-card__body">
+                            <h4 class="meaning-card__title">Cognitive Memory</h4>
+                            <p class="meaning-card__desc">What do I remember? What should be preserved?</p>
+                            <p class="meaning-card__quote">&ldquo;I want to remember this map for later.&rdquo;</p>
+                          </div>
+                          <div class="meaning-card__caps">
+                            <span class="meaning-card__cap">Memory Recall Prediction</span>
+                            <span class="meaning-card__cap">Memory Intent Modeling</span>
+                          </div>
+                        </article>
+                      </div>
+                    </section>
+                  </div>
+
+                  <!-- Bottom: how labels are produced — one unified card,
+                       vertical "HOW / WE ANNOTATE" label on the left, then
+                       3 steps with large round icons and → arrow connectors. -->
+                  <div class="feature1__flow">
+                    <div class="feature1__flow-card">
+                      <div class="feature1__flow-label" aria-hidden="true">
+                        <span>How</span>
+                        <span>We Annotate</span>
+                      </div>
+
+                      <div class="feature1__steps">
+                        <!-- Step 1 — In-Situ Marker -->
+                        <div class="step">
+                          <span class="step__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="6" y="2.5" width="12" height="19" rx="2"/>
+                              <line x1="10" y1="19" x2="14" y2="19"/>
+                              <path d="M12 6l1 2.2 2.4.35-1.7 1.65.4 2.4L12 11.5l-2.1 1.1.4-2.4-1.7-1.65 2.4-.35z"/>
+                            </svg>
+                          </span>
+                          <div class="step__body">
+                            <h4 class="step__title">
+                              <span class="step__num">1.</span> In-Situ Marker
+                            </h4>
+                            <p class="step__desc">
+                              Participants mark meaningful moments during recording (voice or text).
+                            </p>
+                            <div class="step__quote">"Hey Assistant, mark this."</div>
+                          </div>
+                        </div>
+
+                        <span class="step-connector" aria-hidden="true">
+                          <svg viewBox="0 0 32 8" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="0" y1="4" x2="25" y2="4" stroke-dasharray="2 3"/>
+                            <polyline points="23 1 28 4 23 7"/>
+                          </svg>
+                        </span>
+
+                        <!-- Step 2 — Retrospective Review -->
+                        <div class="step">
+                          <span class="step__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="2" y="5" width="20" height="14" rx="2"/>
+                              <line x1="2" y1="9"  x2="5"  y2="9"/>
+                              <line x1="2" y1="13" x2="5"  y2="13"/>
+                              <line x1="2" y1="17" x2="5"  y2="17"/>
+                              <line x1="19" y1="9"  x2="22" y2="9"/>
+                              <line x1="19" y1="13" x2="22" y2="13"/>
+                              <line x1="19" y1="17" x2="22" y2="17"/>
+                              <circle cx="12" cy="12" r="3.5"/>
+                              <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
+                            </svg>
+                          </span>
+                          <div class="step__body">
+                            <h4 class="step__title">
+                              <span class="step__num">2.</span> Retrospective Review
+                            </h4>
+                            <p class="step__desc">
+                              Wearers review the moment with video, audio, gaze and other signals.
+                            </p>
+                          </div>
+                        </div>
+
+                        <span class="step-connector" aria-hidden="true">
+                          <svg viewBox="0 0 32 8" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="0" y1="4" x2="25" y2="4" stroke-dasharray="2 3"/>
+                            <polyline points="23 1 28 4 23 7"/>
+                          </svg>
+                        </span>
+
+                        <!-- Step 3 — Structured Label -->
+                        <div class="step">
+                          <span class="step__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="5" y="4" width="14" height="18" rx="1.6"/>
+                              <rect x="9" y="2" width="6" height="3" rx="0.6"/>
+                              <polyline points="8 10.5 9.6 12.1 12.2 9.5"/>
+                              <polyline points="8 15.5 9.6 17.1 12.2 14.5"/>
+                              <line x1="14" y1="11" x2="17" y2="11"/>
+                              <line x1="14" y1="16" x2="17" y2="16"/>
+                            </svg>
+                          </span>
+                          <div class="step__body">
+                            <h4 class="step__title">
+                              <span class="step__num">3.</span> Structured Label
+                            </h4>
+                            <p class="step__desc">
+                              Annotators turn responses into structured affective, interactive, and cognitive tags.
+                            </p>
+                            <div class="step__tags">
+                              <span class="step__tag step__tag--felt">Felt</span>
+                              <span class="step__tag step__tag--wanted">Wanted</span>
+                              <span class="step__tag step__tag--remembered">Remembered</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p class="feature1__disclaimer">
+                      <svg class="feature1__disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <line x1="12" y1="11" x2="12" y2="16"/>
+                        <circle cx="12" cy="8" r="0.8" fill="currentColor"/>
+                      </svg>
+                      These labels are the ground truth for benchmarks on user internal states.
+                    </p>
+                  </div>
+                </div>
               </article>
               <article class="slide" data-slide="2">
                 <div class="slide-placeholder">Slide 03 — coming soon</div>
